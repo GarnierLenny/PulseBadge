@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
-import { PrismaService } from '@/prisma/prisma.service';
 import { ConfigModule } from '@nestjs/config';
 import { UserRepository } from './user.repository';
 
@@ -15,7 +14,21 @@ describe('UserService', () => {
           isGlobal: true,
         }),
       ],
-      providers: [UserRepository, PrismaService, UserService],
+      providers: [
+        UserService,
+        {
+          provide: UserRepository,
+          useValue: {
+            createUser: jest
+              .fn()
+              .mockResolvedValue({ id: '1', email: 'test@test.com' }),
+            findUserById: jest
+              .fn()
+              .mockResolvedValue({ id: '1', email: 'test@test.com' }),
+            deleteUserById: jest.fn().mockResolvedValue({ id: '1' }),
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<UserService>(UserService);
@@ -29,7 +42,6 @@ describe('UserService', () => {
     const user = await service.createUser();
 
     expect(user).toBeDefined();
-    await service.deleteUserById(user.id);
   });
 
   it('should find user', async () => {
@@ -37,6 +49,5 @@ describe('UserService', () => {
     const foundUser = await service.findUserById(user.id);
 
     expect(foundUser).toBeDefined();
-    await service.deleteUserById(user.id);
   });
 });
