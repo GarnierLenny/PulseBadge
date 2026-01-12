@@ -19,6 +19,9 @@ import {
 } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { UserService } from './user/user.service';
+import { ConfigModule } from '@nestjs/config';
+import { UserModule } from './user/user.module';
 
 @Catch(HttpException)
 class HttpExceptionFilter extends BaseExceptionFilter {
@@ -38,7 +41,12 @@ class HttpExceptionFilter extends BaseExceptionFilter {
 }
 
 @Module({
-  imports: [],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    UserModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,
@@ -54,6 +62,7 @@ class HttpExceptionFilter extends BaseExceptionFilter {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
     },
+    UserService,
   ],
 })
 export class AppModule {}
