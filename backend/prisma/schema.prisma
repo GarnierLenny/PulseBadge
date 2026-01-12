@@ -55,4 +55,6 @@ enum SocialType {
   STACK_OVERFLOW
   FIGMA
   BEHANCE
+  LINKEDIN
+  MEDIUM
 }
